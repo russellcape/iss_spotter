@@ -21,13 +21,18 @@ const fetchMyIP = function(callback) {
     // console.log("typeof data.ip:", typeof data.ip)
     // console.log("typeof data.ip.toString():", typeof data.ip.toString())
     if (error) {
-      callback(`Failed to request details: ${error}`, null);
+      callback(error, null);
+      return;
+    }
+    if (resp.statusCode !== 200) {
+      const msg = `Status Code ${resp.statusCode} when fetching IP. Response: ${data}`;
+      callback(Error(msg), null);
+      return;
     }
     if (data.length === 0) {
       callback(`Failed to find IP Address`, null);
-    } else {
+    }  
       callback(null, data.ip.toString());
-    }
   });
 };
 
