@@ -26,20 +26,39 @@ const request = require('request');
 //   });
 // };
 
-const fetchCoordsByIP = function(ip, callback) {
-  const url = `https://ipvigilante.com/json/1.1${ip}`;
-  request(url, (error, resp, body) => {
+// const fetchCoordsByIP = function(ip, callback) {
+//   const url = `https://ipvigilante.com/json/1.1${ip}`;
+//   request(url, (error, resp, body) => {
+//     if (error) {
+//       callback(error, null);
+//       return;
+//     }
+//     if (resp.statusCode !== 200) {
+//       callback(`Status Code ${resp.statusCode} when fetching IP. Response: ${body}`, null);
+//       return;
+//     }
+//     const { latitude, longitude } = JSON.parse(body).data;
+
+//     callback(null, { latitude, longitude });
+//   });
+// };
+
+const fetchISSFlyOverTimes = function(coords, callback) {
+  const url = `http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`;
+
+  request(url, (error, response, body) => {
     if (error) {
       callback(error, null);
       return;
     }
-    if (resp.statusCode !== 200) {
-      callback(`Status Code ${resp.statusCode} when fetching IP. Response: ${body}`, null);
+
+    if (response.statusCode !== 200) {
+      callback(Error(`Status Code ${response.statusCode} when fetching ISS pass times: ${body}`), null);
       return;
     }
-    const { latitude, longitude } = JSON.parse(body).data;
 
-    callback(null, { latitude, longitude });
+    const passes = JSON.parse(body).response;
+    callback(null, passes);
   });
 };
 
